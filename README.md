@@ -17,3 +17,33 @@ The **JS Handbook** is a comprehensive, interactive guide designed to master the
 - **React 19**
 - **Vite**
 - **Vanilla CSS** (Custom Design System with Glassmorphism)
+
+## 📚 Topics Covered
+
+1. **Variables & Scope**: `var`, `let`, `const`, Hoisting, and TDZ.
+2. **Execution Context**: The `this` keyword, binding rules, and arrow functions.
+3. **Closures**: Lexical scope, memory models, and the module pattern.
+4. **Higher-Order Functions**: `map`, `filter`, `reduce`, and functional composition.
+5. **Prototypes**: Prototype chain, inheritance, and ES6 class mechanisms.
+
+## 🚀 Quick Start
+
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/yourusername/js-handbook.git
+   ```
+2. **Install dependencies:**
+   ```bash
+   npm install
+   ```
+3. **Run the development server:**
+   ```bash
+   npm run dev
+   ```
+
+## 🤝 Contributing
+
+Contributions are welcome! If you have more FAANG questions, useful mental models, or spot any bugs, please feel free to submit a Pull Request.
+
+---
+*Built with ❤️ for the JavaScript community.*
