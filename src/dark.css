@@ -1,0 +1,179 @@
+/* DARK MODE OVERRIDES */
+html.dark {
+  color-scheme: dark;
+
+  --color-background-primary: #0b1120;
+  --color-background-secondary: #111827;
+  --color-background-tertiary: #020617;
+  --color-surface-glass: rgba(15, 23, 42, 0.82);
+  --color-surface-raised: #1e293b;
+  
+  --color-text-primary: #f8fafc;
+  --color-text-secondary: #94a3b8;
+  --color-text-tertiary: #64748b;
+  
+  --color-border-primary: #334155;
+  --color-border-secondary: #1e293b;
+  --color-border-tertiary: rgba(255,255,255,0.06);
+
+  --color-background-success: rgba(5, 150, 105, 0.15);
+  --color-background-info: rgba(37, 99, 235, 0.15);
+  --color-background-warning: rgba(217, 119, 6, 0.15);
+  --color-background-danger: rgba(225, 29, 72, 0.15);
+
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-sm: 0 8px 24px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 18px 50px rgba(0, 0, 0, 0.5);
+
+  --color-teal: #2dd4bf;
+  --color-bg-teal: rgba(45, 212, 191, 0.15);
+  --color-coral: #f87171;
+  --color-bg-coral: rgba(248, 113, 113, 0.15);
+  --color-green: #4ade80;
+  --color-bg-green: rgba(74, 222, 128, 0.15);
+  --color-pink: #f472b6;
+  --color-bg-pink: rgba(244, 114, 182, 0.15);
+}
+
+html.dark body {
+  background:
+    linear-gradient(180deg, rgba(15, 23, 42, 0.95), rgba(2, 6, 23, 0.98)),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px) !important;
+}
+
+html.dark #root > div[style*="height: 100vh"] {
+  background: linear-gradient(180deg, rgba(15, 23, 42, 0.96) 0%, rgba(2, 6, 23, 0.94) 100%) !important;
+}
+
+html.dark #root > div[style*="height: 100vh"]::before {
+  background:
+    linear-gradient(90deg, rgba(15, 23, 42, 0.72), transparent 28%, transparent 72%, rgba(15, 23, 42, 0.56)),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.02), transparent 34%) !important;
+}
+
+html.dark #root > div[style*="height: 100vh"] > div:first-of-type {
+  background: linear-gradient(180deg, rgba(15, 23, 42, 0.94), rgba(2, 6, 23, 0.86)) !important;
+  border-right: 1px solid var(--color-border-tertiary) !important;
+}
+html.dark #root > div[style*="height: 100vh"] > div:first-of-type > div:first-child {
+  background: rgba(15, 23, 42, 0.76) !important;
+}
+html.dark #root > div[style*="height: 100vh"] > div:first-of-type > div:first-child > div:first-child {
+  color: #f8fafc !important;
+}
+html.dark #root > div[style*="height: 100vh"] > div:first-of-type > div:first-child > div:first-child::before {
+  background: linear-gradient(135deg, #1e293b, #0f172a), #0f172a !important;
+  color: #38bdf8 !important;
+  border-color: rgba(56, 189, 248, 0.22) !important;
+}
+html.dark #root > div[style*="height: 100vh"] > div:first-of-type button:hover {
+  background: rgba(255, 255, 255, 0.05) !important;
+}
+html.dark #root > div[style*="height: 100vh"] > div:first-of-type > div:last-child {
+  background: rgba(15, 23, 42, 0.66) !important;
+}
+html.dark input {
+  background: rgba(15, 23, 42, 0.88) !important;
+  color: var(--color-text-primary) !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05) !important;
+  border-color: var(--color-border-tertiary) !important;
+}
+
+html.dark #root > div[style*="height: 100vh"] > div:nth-of-type(2) > div:first-child {
+  background: rgba(15, 23, 42, 0.8) !important;
+  border-bottom: 1px solid var(--color-border-tertiary) !important;
+  box-shadow: none !important;
+}
+html.dark #root > div[style*="height: 100vh"] > div:nth-of-type(2) > div:first-child > div:first-child > div:nth-child(2) > div:first-child {
+  color: #f8fafc !important;
+}
+html.dark #root > div[style*="height: 100vh"] > div:nth-of-type(2) > div:first-child > div:first-child button {
+  background: rgba(30, 41, 59, 0.82) !important;
+  border-color: var(--color-border-tertiary) !important;
+}
+html.dark #root > div[style*="height: 100vh"] > div:nth-of-type(2) > div:first-child > div:first-child button:hover {
+  background: #334155 !important;
+}
+html.dark #root > div[style*="height: 100vh"] > div:nth-of-type(2) > div:first-child > div:nth-child(2) button {
+  background: rgba(30, 41, 59, 0.72) !important;
+  box-shadow: none !important;
+}
+html.dark #root > div[style*="height: 100vh"] > div:nth-of-type(2) > div:first-child > div:nth-child(2) button[style*="font-weight: 500"] {
+  background: rgba(37, 99, 235, 0.2) !important;
+}
+html.dark #root > div[style*="height: 100vh"] > div:nth-of-type(2) > div:last-child {
+  background: rgba(15, 23, 42, 0.82) !important;
+  border-top: 1px solid var(--color-border-tertiary) !important;
+}
+html.dark #root > div[style*="height: 100vh"] > div:nth-of-type(2) > div:last-child button:hover {
+  background: #1e293b !important;
+}
+
+html.dark #root div[style*="background: var(--color-background-secondary)"][style*="border-radius: var(--border-radius-md)"],
+html.dark #root div[style*="background: var(--color-background-secondary)"][style*="border-radius: var(--border-radius-lg)"] {
+  background: linear-gradient(180deg, rgba(30, 41, 59, 0.94), rgba(15, 23, 42, 0.92)) !important;
+  border-color: var(--color-border-tertiary) !important;
+}
+
+html.dark #root table {
+  background: #0f172a !important;
+}
+html.dark #root thead th {
+  background: linear-gradient(180deg, #1e293b, #0f172a) !important;
+  color: #f8fafc !important;
+}
+html.dark #root tbody td {
+  background: #0b1120 !important;
+}
+html.dark #root tbody tr:nth-child(even) td {
+  background: #0f172a !important;
+}
+html.dark #root tbody tr:hover td {
+  background: #1e293b !important;
+}
+
+html.dark #root div[style*="display: grid"][style*="grid-template-columns: 1fr 1fr"] > div {
+  background: #0f172a !important;
+}
+html.dark #root div[style*="display: grid"][style*="grid-template-columns: 1fr 1fr"] > div:first-child {
+  background: linear-gradient(180deg, rgba(225, 29, 72, 0.1), rgba(15, 23, 42, 0.94)) !important;
+}
+html.dark #root div[style*="display: grid"][style*="grid-template-columns: 1fr 1fr"] > div:nth-child(2) {
+  background: linear-gradient(180deg, rgba(5, 150, 105, 0.1), rgba(15, 23, 42, 0.94)) !important;
+}
+
+html.dark #root div[style*="display: flex"][style*="flex-direction: column"][style*="gap: 10px"] > div {
+  background: #0f172a !important;
+  border-color: var(--color-border-tertiary) !important;
+}
+html.dark #root div[style*="display: flex"][style*="flex-direction: column"][style*="gap: 10px"] > div > button {
+  background: linear-gradient(180deg, rgba(30, 41, 59, 0.96), rgba(15, 23, 42, 0.96)) !important;
+}
+html.dark #root div[style*="display: flex"][style*="flex-direction: column"][style*="gap: 10px"] > div > button + div {
+  background: #0b1120 !important;
+}
+
+html.dark #root div[style*="grid-template-columns: repeat(auto-fit,minmax(280px,1fr))"] > div {
+  background: linear-gradient(180deg, rgba(30, 41, 59, 0.94), rgba(15, 23, 42, 0.94)) !important;
+  border-color: var(--color-border-tertiary) !important;
+}
+
+html.dark #root pre[style*="background: var(--color-background-secondary)"] {
+  background: linear-gradient(180deg, rgba(30, 41, 59, 0.94), rgba(15, 23, 42, 0.96)) !important;
+  border-color: var(--color-border-tertiary) !important;
+  color: #cbd5e1 !important;
+}
+
+html.dark #root div[style*="border-radius: var(--border-radius-lg)"][style*="overflow: hidden"]:has(> pre) > pre {
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.02), transparent 18%), transparent !important;
+}
+
+html.dark code {
+  background: rgba(30, 41, 59, 0.8) !important;
+  color: #93c5fd !important;
+}
+
+html.dark ::selection {
+  background: rgba(56, 189, 248, 0.4);
+}

@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 
 const highlight = (code) => {
   if (!code) return "";
@@ -34,8 +34,8 @@ const Badge = ({ level }) => {
   return <span style={{fontSize:11,padding:"2px 8px",borderRadius:20,background:s.bg,color:s.c,fontWeight:500}}>{s.label}</span>;
 };
 
-const COLORS = { amber:"var(--color-text-warning)", purple:"var(--color-text-info)", teal:"#0F6E56", blue:"var(--color-text-info)", coral:"#993C1D", green:"#3B6D11", pink:"#993556", gray:"var(--color-text-secondary)" };
-const BG_COLORS = { amber:"var(--color-background-warning)", purple:"var(--color-background-info)", teal:"#E1F5EE", blue:"var(--color-background-info)", coral:"#FAECE7", green:"#EAF3DE", pink:"#FBEAF0", gray:"var(--color-background-secondary)" };
+const COLORS = { amber:"var(--color-text-warning)", purple:"var(--color-text-info)", teal:"var(--color-teal)", blue:"var(--color-text-info)", coral:"var(--color-coral)", green:"var(--color-green)", pink:"var(--color-pink)", gray:"var(--color-text-secondary)" };
+const BG_COLORS = { amber:"var(--color-background-warning)", purple:"var(--color-background-info)", teal:"var(--color-bg-teal)", blue:"var(--color-background-info)", coral:"var(--color-bg-coral)", green:"var(--color-bg-green)", pink:"var(--color-bg-pink)", gray:"var(--color-background-secondary)" };
 
 
 const TOPICS = [
@@ -1764,6 +1764,20 @@ export default function App() {
   const [activeTopic, setActiveTopic] = useState(0);
   const [activeSection, setActiveSection] = useState(0);
   const [search, setSearch] = useState("");
+  const [darkMode, setDarkMode] = useState(() => {
+    return localStorage.getItem('theme') === 'dark' || (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
+  });
+
+  useEffect(() => {
+    if (darkMode) {
+      document.documentElement.classList.add('dark');
+      localStorage.setItem('theme', 'dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+      localStorage.setItem('theme', 'light');
+    }
+  }, [darkMode]);
+
   const topic = TOPICS[activeTopic];
 
   const filtered = useMemo(()=>
@@ -1826,6 +1840,9 @@ export default function App() {
               <div style={{fontSize:12,color:"var(--color-text-tertiary)"}}>{topic.subtitle}</div>
             </div>
             <div style={{marginLeft:"auto",display:"flex",gap:8}}>
+              <button onClick={() => setDarkMode(!darkMode)} style={{padding:"0",width:32,height:32,borderRadius:"50%",display:"flex",alignItems:"center",justifyContent:"center",fontSize:14,border:"1px solid var(--color-border-secondary)",background:"var(--color-background-secondary)",color:"var(--color-text-primary)",cursor:"pointer"}} title="Toggle Dark Mode">
+                {darkMode ? "☀️" : "🌙"}
+              </button>
               <button onClick={()=>setActiveTopic(Math.max(0,activeTopic-1))} style={{padding:"5px 10px",fontSize:12}} disabled={activeTopic===0}>
                 <i className="ti ti-arrow-left" aria-hidden="true"/> prev
               </button>
