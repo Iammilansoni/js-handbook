@@ -149,7 +149,7 @@ export function TopicView({ topic }) {
       </div>
 
       {showPrompt && promptSectionId && (
-        <div style={{
+        <div className="hb-prompt-enter" style={{
           position: "fixed", bottom: 24, right: 24, zIndex: 100,
           background: "var(--hb-bg-glass)", border: "1px solid var(--hb-border)",
           padding: "16px 20px", borderRadius: "12px", boxShadow: "0 10px 30px rgba(0,0,0,0.5)",
