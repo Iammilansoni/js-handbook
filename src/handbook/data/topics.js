@@ -2260,9 +2260,617 @@ Iterator Object
     "for...of loop consumes iterables automatically.",
     "Generators (function*) are syntactic sugar."
   ]
+},
+{
+id: 32,
+slug: "complexity",
+icon: "📈",
+color: "orange",
+title: "Big-O & Algorithmic Complexity",
+subtitle: "Time, space, and engine-specific structural complexities.",
+overview: {
+definition: "Big-O notation mathematically describes the limiting behavior of a function as its arguments tend towards a particular value or infinity. In JavaScript, theoretical complexity meets engine reality: understanding V8's hidden classes, memory reallocation, and the structural differences between array methods is essential for Staff-level performance tuning.",
+why: "A theoretical $O(N)$ algorithm can run 10x slower than an $O(N^2)$ algorithm for small $N$ due to CPU cache misses and constant factors. At scale, selecting $O(\log N)$ vs $O(N)$ operations dictates whether your Node server processes 10,000 requests per second or 10.",
+react: "React's reconciliation algorithm (Virtual DOM diffing) is heavily optimized. A naive tree diff is $O(N^3)$, but React uses heuristic assumptions (elements of different types produce different trees, and stable `key` props) to achieve an $O(N)$ reconciliation process.",
+node: "Event loop blocking. Since Node is single-threaded, executing an $O(N^2)$ operation on an array of 100,000 items synchronously blocks the main thread, freezing the server for all other incoming requests.",
+express: "Optimizing route matching. Express internally iterates through routes. Massive route tables without proper prefix matching can degrade to $O(N)$ string comparisons per request, reducing API throughput.",
+challenge: {
+title: "Find Duplicate $O(1)$ Space",
+description: "Given an array of integers nums containing $N + 1$ integers where each integer is in the range $[1, N]$ inclusive, find the duplicate number. You must solve it in $O(N)$ time and use only $O(1)$ extra space (Floyd's Tortoise and Hare).",
+initialCode: "function solve(nums) {\n  // your code here\n  return -1;\n}",
+testCases: [
+{ input: "[1,3,4,2,2]", expected: "2" },
+{ input: "[3,1,3,4,2]", expected: "3" }
+]
+},
+interview: "FAANG interviews are rooted in Big-O. Interviewers test if you can analyze both time and space constraints. Mentioning amortized bounds or engine-level cache locality during algorithmic interviews distinguishes senior candidates."
+},
+mentalModel: {
+analogy: "O(1) is grabbing a book directly from its shelf slot. O(N) is searching a bookshelf cover by cover. O(log N) is opening a dictionary precisely in the middle, determining which half your word is in, and repeating. Amortized O(1) is moving to a new, bigger house: most days you just walk in (O(1)), but occasionally you have to pack and move everything you own (O(N)).",
+visual: "Time Complexity Growth Rates:\nO(N!)  O(2^N)   O(N^2)      O(N log N)\n  │      /       /         /\n  │     /       /       /  \n  │    /       /     /     O(N)\n  │   /       /   /        \n  │  /       / /           O(log N)\n  │ /       /              O(1)\n  └─────────────────────────────── N",
+misconceptions: [
+["Array.push() is always O(1) time", "It is AMORTIZED $O(1)$. When the underlying memory block fills up, V8 must allocate a new contiguous memory block (typically 1.5x larger) and copy all $O(N)$ existing elements over."],
+["Objects and Maps have identical lookup complexities", "While both are theoretically $O(1)$, standard objects traverse the prototype chain on misses. Maps are strictly isolated hash tables, often yielding faster constant-time inserts/lookups in V8."],
+["Recursion has O(1) space complexity if you don't declare variables", "Every recursive call pushes a frame onto the Call Stack. Standard recursion uses $O(N)$ space, risking a Stack Overflow. Only engines supporting Tail Call Optimization (TCO) can collapse this to $O(1)$."]
+]
+},
+theory: [
+{
+title: "Amortized Analysis of Array Methods",
+desc: "`push()` and `pop()` operate at the end of the array. Because memory is contiguous, adding an item is $O(1)$. Conversely, `unshift()` and `shift()` add/remove at the beginning, forcing the engine to shift the memory addresses of all $N$ subsequent elements, resulting in $O(N)$ time complexity.",
+code: "const arr = [1, 2, 3];\n// O(1) - Amortized constant time\narr.push(4); \n\n// O(N) - Linear time. 1, 2, 3, and 4 must all move in memory.\narr.unshift(0);"
+},
+{
+title: "Hash Tables & V8 Hidden Classes",
+desc: "V8 optimizes object property access using Hidden Classes (Shapes). If you initialize objects identically, they share a Hidden Class, making lookups a rapid pointer offset. Adding properties dynamically creates transition chains, degrading performance.",
+code: "// FAST: Same hidden class\nconst p1 = { x: 1, y: 2 };\nconst p2 = { x: 3, y: 4 };\n\n// SLOW: Forces hidden class transition\nconst p3 = { x: 5 };\np3.y = 6;"
+},
+{
+title: "Space Complexity: Call Stack vs Heap",
+desc: "Space complexity accounts for auxiliary heap allocations (creating new arrays/objects) AND call stack frames. Deeply nested recursion implies a linear space overhead, even without local variables.",
+code: "// Space: O(N) due to Call Stack frames\nfunction sum(n) {\n  if (n === 1) return 1;\n  return n + sum(n - 1);\n}\n\n// Space: O(1) iterative\nfunction sumIterative(n) {\n  let total = 0;\n  for(let i = 1; i <= n; i++) total += i;\n  return total;\n}"
+},
+{
+title: "Tail Call Optimization (TCO)",
+desc: "TCO allows a recursive function to execute without growing the call stack if the recursive call is the absolutely last action in the function. In JS, only Safari (JavaScriptCore) strictly implements ES6 TCO.",
+code: "// TCO-compatible recursion (Space: O(1) in Safari)\nfunction sumTCO(n, acc = 0) {\n  if (n === 0) return acc;\n  return sumTCO(n - 1, acc + n); // Strict tail call\n}"
 }
-
+],
+cheatsheet: [
+{ label: "$O(1)$ Constant", desc: "Hash Map lookup, Array index access, basic arithmetic." },
+{ label: "$O(\log N)$ Logarithmic", desc: "Binary search, Tree traversals (balanced). Data space halves per step." },
+{ label: "$O(N)$ Linear", desc: "Array iteration, `shift()`, `unshift()`, `indexOf()`." },
+{ label: "$O(N \log N)$ Linearithmic", desc: "Efficient sorting algorithms: Merge Sort, Quick Sort (average), TimSort." },
+{ label: "$O(N^2)$ Quadratic", desc: "Nested loops, Bubble Sort, computing pairwise distances." },
+{ label: "$O(2^N)$ Exponential", desc: "Naive recursive Fibonacci, finding all subsets/combinations." },
+{ label: "$O(N!)$ Factorial", desc: "Finding all permutations of a string or array." },
+{ label: "Amortized $O(1)$", desc: "Operations that are typically $O(1)$ but occasionally spike to $O(N)$ (e.g., dynamic array resizing)." }
+],
+interview: [
+{
+q: "Explain why JavaScript engines prefer Map over Object for frequently updated key-value stores.",
+a: "Objects are not purely hash tables in V8; they are optimized using Hidden Classes for fast property access when structures are static. When you constantly add/delete keys, you cause 'dictionary mode' deoptimizations and prototype chain traversals. `Map` is explicitly implemented as a deterministic hash table, guaranteeing fast amortized $O(1)$ insertions and preventing key collisions with prototype properties.",
+difficulty: "Advanced"
+},
+{
+q: "What is the time complexity of `Array.prototype.splice()`?",
+a: "The time complexity is $O(N)$. Even if you are inserting/removing a single element, the engine must shift the memory blocks of all subsequent elements to maintain contiguous memory allocation.",
+difficulty: "Intermediate"
+},
+{
+q: "How does String concatenation complexity behave in modern JavaScript?",
+a: "Historically, `str += 'a'` was $O(N)$, requiring memory reallocation for the entire new string. Modern engines (V8) use 'Ropes' or 'ConsStrings' under the hood. They store concatenations as a tree of pointers rather than copying memory immediately, making concatenation effectively $O(1)$ until the string is actually flattened (read/rendered).",
+difficulty: "FAANG"
+},
+{
+q: "If you have an array of 1,000,000 items and need to repeatedly check if elements exist, what do you do?",
+a: "Using `Array.includes()` inside a loop yields $O(N^2)$ complexity. I would convert the array to a `Set` once, which takes $O(N)$ time and space. Subsequent `Set.has()` checks operate in $O(1)$ time, reducing the overall operation complexity to $O(N)$.",
+difficulty: "Beginner"
+}
+]
+},
+{
+id: 33,
+slug: "advanced-typescript",
+icon: "📘",
+color: "blue",
+title: "Advanced TypeScript Architecture",
+subtitle: "Structural typing, Generics, `infer`, and Mapped Types.",
+overview: {
+definition: "TypeScript is a structural type system overlaid on JavaScript. Advanced TS moves beyond primitive annotations into type metaprogramming. Features like Conditional Types, Mapped Types, and the `infer` keyword allow developers to craft dynamic, Turing-complete type definitions that adapt based on the shapes of generic inputs.",
+why: "In large codebases, rigid any/unknown casting masks runtime errors. Advanced TS allows you to write libraries (like Redux or TRPC) where the return type of a function perfectly mirrors its complex, deeply-nested input, providing zero-overhead compile-time safety.",
+react: "Typing polymorphic components (`<Text as=\"h1\">`). Using generic constraints to ensure props automatically update depending on an `as` generic, or extracting prop types directly from native DOM elements using `ComponentProps`.",
+node: "Typing complex database ORM responses (like Prisma) where selecting specific relational fields dynamically alters the returned TypeScript interface.",
+express: "Creating strongly typed route handlers where the `req.body`, `req.query`, and `req.params` are implicitly inferred from a Zod schema or a generic routing table.",
+challenge: {
+title: "Type Guard & Discrimination",
+description: "Write a runtime function `isDog` that acts as a type guard. In TS, this would use the signature `(animal: any): animal is Dog`. Return true if the object has a `bark` property.",
+initialCode: "function isDog(animal) {\n  // your code here\n  return false;\n}",
+testCases: [
+{ input: "{ bark: () => {} }", expected: "true" },
+{ input: "{ meow: () => {} }", expected: "false" }
+]
+},
+interview: "FAANG interviews using TypeScript will test your understanding of its compilation mechanics (type erasure), the difference between structural and nominal typing, and advanced utility types."
+},
+mentalModel: {
+analogy: "Nominal typing (Java/C#) is caring about the brand name on the shirt. Structural typing (TypeScript) is caring only if the shirt fits. If a variable requires an object with `{ id: string }`, TS doesn't care if it's explicitly instantiated as a 'User' class, it only checks if the 'id' property physically exists.",
+visual: "Conditional Type Pipeline:\nInput Type (T) ──► T extends U ? ──► Yes: Return Type X\n                                 ──► No: Return Type Y\n\nMapped Type Pipeline:\n{ a: 1, b: 2 } ──► [K in keyof T] ──► { a: number, b: number }",
+misconceptions: [
+["TypeScript executes at runtime", "TypeScript is completely erased during compilation. Interfaces, Generics, and Types do not exist in the V8 engine and cannot affect runtime behavior."],
+["'any' and 'unknown' are the same", "`any` disables the type checker completely. `unknown` is safe: you must explicitly narrow it (via `typeof` or type guards) before performing operations on it."],
+["Enums are perfectly safe", "Numeric Enums in TypeScript are deeply flawed and allow reverse-mapping and out-of-bounds assignments. String Unions or `as const` objects are preferred."]
+]
+},
+theory: [
+{
+title: "Structural vs Nominal Typing",
+desc: "TypeScript uses Structural Typing (Duck Typing). If two objects share the same shape, they are considered the same type, regardless of their explicit class names or origins.",
+code: "interface Vector2D { x: number; y: number; }\ninterface Point { x: number; y: number; }\n\n// Perfectly valid in TS, illegal in Java/C++\nlet vec: Vector2D = { x: 1, y: 2 };\nlet pt: Point = vec;"
+},
+{
+title: "Conditional Types & 'infer'",
+desc: "Conditional types evaluate types via ternary logic: `T extends U ? X : Y`. The `infer` keyword allows you to extract and assign a type variable dynamically during this evaluation.",
+code: "// Extracts the return type from a function signature\ntype MyReturnType = T extends (...args: any[]) => infer R ? R : never;\n\nfunction getGreeting() { return 'hello'; }\ntype Greeting = MyReturnType; // string"
+},
+{
+title: "Mapped Types & Key Remapping",
+desc: "Mapped types iterate over keys using the `in` keyword. TS 4.1 introduced key remapping via `as`, allowing you to transform key names during iteration.",
+code: "interface User { id: number; name: string; }\n\n// Create a type where every key has a 'get' prefix\ntype Getters = {\n  [K in keyof T as `get${Capitalize<string & K>}`]: () => T[K]\n};\ntype UserGetters = Getters;\n// { getId: () => number; getName: () => string; }"
+},
+{
+title: "Discriminated Unions & Exhaustive Checks",
+desc: "Combining literal types with unions allows TS to narrow types elegantly. You can use the `never` type in a switch statement's default case to guarantee all variants are handled at compile time.",
+code: "type Action = { type: 'ADD'; payload: number } | { type: 'RESET' };\n\nfunction reduce(action: Action) {\n  switch (action.type) {\n    case 'ADD': return action.payload;\n    case 'RESET': return 0;\n    default:\n      // Compile error if a new Action is added but not handled here\n      const _exhaustiveCheck: never = action;\n      return _exhaustiveCheck;\n  }\n}"
+}
+],
+cheatsheet: [
+{ label: "keyof T", desc: "Extracts a union of literal string keys from an object type." },
+{ label: "typeof x", desc: "Extracts the type from a runtime javascript variable." },
+{ label: "T extends U", desc: "Constraint: 'Is T assignable to U?' Used in generics and conditionals." },
+{ label: "infer R", desc: "Declares a type variable `R` to extract a sub-type in a conditional." },
+{ label: "Omit<T, K>", desc: "Utility type: constructs a type with properties `K` removed from `T`." },
+{ label: "Pick<T, K>", desc: "Utility type: constructs a type by plucking properties `K` from `T`." },
+{ label: "Record<K, T>", desc: "Constructs an object type with keys of type `K` and values `T`." },
+{ label: "never", desc: "The bottom type. Represents a state that should never mathematically occur." }
+],
+interview: [
+{
+q: "Explain the difference between `any` and `unknown`.",
+a: "`any` completely bypasses the compiler, essentially turning off TypeScript for that variable. You can call any method on it, risking runtime crashes. `unknown` is the type-safe counterpart. It signifies a value of unknown origin, but forces you to perform type narrowing (using `typeof`, `instanceof`, or custom type guards) before you can interact with its properties.",
+difficulty: "Beginner"
+},
+{
+q: "How can you simulate Nominal Typing in TypeScript?",
+a: "Since TS is structurally typed, two identical shapes are interchangeable. To prevent this (e.g., distinguishing an `OrderId` string from a `UserId` string), you can use 'Branded Types' or 'Opaque Types'. You intersect the base type with a unique symbol or literal tag: `type OrderId = string & { readonly __brand: unique symbol }`.",
+difficulty: "Advanced"
+},
+{
+q: "What does the `infer` keyword do, and where can it be used?",
+a: "The `infer` keyword can only be used within the `extends` clause of a conditional type. It acts as a declarative pattern matcher, telling the compiler to deduce the type of a specific section of a generic structure (like extracting the element type of an array or the arguments of a function) and assign it to a temporary type variable.",
+difficulty: "Intermediate"
+},
+{
+q: "Why does TypeScript sometimes complain about indexing objects with string keys, and how do you fix it?",
+a: "If an object doesn't have an index signature (`[key: string]: any`), TS prevents you from indexing it dynamically via variables (e.g., `obj[dynamicKey]`) to preserve type safety. You fix it by typing the key as `keyof typeof obj`, or by casting the object to a `Record<string, any>` if dynamic indexing is genuinely required.",
+difficulty: "Intermediate"
+}
+]
+},
+{
+id: 34,
+slug: "classes-oop",
+icon: "🏗️",
+color: "amber",
+title: "ES6+ Classes & OOP Patterns",
+subtitle: "Prototypes, syntactic sugar, delegation, and true privacy.",
+overview: {
+definition: "JavaScript's `class` keyword (ES2015) is syntactic sugar over its native prototypal inheritance model. Unlike classical OOP languages (Java/C++) where classes are rigid blueprints compiled into memory layouts, JS classes are runtime objects themselves (functions) that establish dynamic delegation links (`[[Prototype]]`) between objects.",
+why: "Deep knowledge of prototypes prevents performance bottlenecks (duplicating methods on instances instead of the prototype) and subtle bugs regarding `this` binding. Understanding modern `#` private fields vs older closures/WeakMaps is vital for secure library design.",
+react: "Pre-React 16.8, class components ruled the ecosystem. Understanding how `super(props)` initializes the prototype chain and why class methods required `.bind(this)` in constructors is essential for maintaining legacy React codebases.",
+node: "Node's standard library (like `EventEmitter`, `Stream`) heavily relies on prototypal inheritance. Extending these classes correctly is fundamental to writing custom Node modules.",
+express: "Creating complex, encapsulated controllers and service singletons in MVC Express architectures.",
+challenge: {
+title: "Implement Prototypal Inheritance",
+description: "Without using the `class` keyword, write a function `Dog` that inherits from `Animal`. `Animal` has a `speak` method on its prototype. Ensure the prototype chain is set up correctly using `Object.create`.",
+initialCode: "function Animal() {}\nAnimal.prototype.speak = function() { return 'noise'; };\n\nfunction Dog() {\n  // your code here\n}\n// set up inheritance here",
+testCases: [
+{ input: "const d = new Dog(); d.speak()", expected: "'noise'" },
+{ input: "const d = new Dog(); d instanceof Animal", expected: "true" }
+]
+},
+interview: "Interviews often ask you to implement classical inheritance using raw ES5 functions to prove you understand `Object.create()`, `.prototype`, and `__proto__`."
+},
+mentalModel: {
+analogy: "Classical inheritance is a Xerox machine: copying a blueprint to build a car. If the blueprint changes later, existing cars don't change. Prototypal inheritance is a hotline. If an object doesn't know how to do something, it calls its prototype. If you teach the prototype a new trick, ALL connected objects instantly learn it.",
+visual: "Instance Object ──(**proto**)──► Class.prototype ──(**proto**)──► Object.prototype\n{ a: 1 }                           { method() }                   { toString() }\n\nLookup 'toString':\n1. Found in Instance? No.\n2. Found in Class.prototype? No.\n3. Found in Object.prototype? YES. Execute.",
+misconceptions: [
+["Classes behave exactly like they do in Java", "JS classes do not physically copy methods to instances. They link objects via a live prototype chain. Changing `MyClass.prototype.method = ...` at runtime changes the behavior of all previously instantiated objects."],
+["TypeScript 'private' is secure", "TS `private` is a compile-time strictness check. It is completely erased at runtime. You can still access `instance.privateVar` in compiled JS. Use ES2022 `#` for true runtime privacy."],
+["Arrow functions inside classes are free", "Defining `method = () => {}` inside a class binds it to the instance, not the prototype. This means every single object instantiated creates a brand new copy of that function in memory, losing the memory benefits of prototypes."]
+]
+},
+theory: [
+{
+title: "The Syntactic Sugar of Class",
+desc: "Under the hood, a class creates a constructor function and attaches methods to that function's `.prototype` object.",
+code: "class User {\n  constructor(name) { this.name = name; }\n  sayHi() { return this.name; }\n}\n\n// Under the hood (ES5 equivalent):\n// function User(name) { this.name = name; }\n// User.prototype.sayHi = function() { return this.name; };"
+},
+{
+title: "Extends & Super",
+desc: "The `extends` keyword links two prototypes: the instance prototypes (`Child.prototype` -> `Parent.prototype`) AND the static constructor functions themselves (`Child` -> `Parent`). `super()` invokes the parent constructor.",
+code: "class Animal {\n  constructor(name) { this.name = name; }\n}\nclass Dog extends Animal {\n  constructor(name, breed) {\n    super(name); // MUST be called before accessing 'this'\n    this.breed = breed;\n  }\n}"
+},
+{
+title: "Static Methods",
+desc: "Static methods are attached directly to the class constructor function, not the prototype. They cannot be called on instances and do not have access to instance-level `this`.",
+code: "class MathUtils {\n  static add(a, b) { return a + b; }\n}\nconsole.log(MathUtils.add(2, 3)); // 5\n\nconst util = new MathUtils();\n// util.add(); // TypeError: util.add is not a function"
+},
+{
+title: "True Private Fields (#)",
+desc: "Introduced in ES2022, prefixing a property or method with `#` enforces strict runtime privacy using internal engine slots. They cannot be accessed outside the class, not even dynamically via `obj['#field']`.",
+code: "class Wallet {\n  #balance = 0;\n  \n  deposit(amount) {\n    this.#balance += amount;\n  }\n  getBalance() {\n    return this.#balance;\n  }\n}\nconst myWallet = new Wallet();\n// myWallet.#balance; // SyntaxError: Private field"
+}
+],
+cheatsheet: [
+{ label: "class", desc: "Syntactic sugar for creating constructor functions and prototype chains." },
+{ label: "constructor", desc: "Initialization method automatically called when using `new`." },
+{ label: "super()", desc: "Calls the parent constructor. Must be called before `this` in a subclass." },
+{ label: "static", desc: "Attaches a method directly to the Class, rather than the prototype." },
+{ label: "extends", desc: "Sets up prototypal delegation between two classes." },
+{ label: "#private", desc: "ES2022 syntax for true, hard-enforced runtime private fields/methods." },
+{ label: "get / set", desc: "Binds an object property to a function that executes on lookup/assignment." },
+{ label: "Object.create(null)", desc: "Creates an object with no prototype. Immune to prototype pollution." }
+],
+interview: [
+{
+q: "How does `extends` differ from `Object.create()`?",
+a: "`Object.create(proto)` creates a single new object whose internal `[[Prototype]]` points to `proto`. `extends` does much more: it wires up the prototype chain for the instance (`Child.prototype = Object.create(Parent.prototype)`), wires up the static chain so child classes inherit static methods (`Object.setPrototypeOf(Child, Parent)`), and enforces that `super()` must be called.",
+difficulty: "Advanced"
+},
+{
+q: "Before `#` private fields existed, how did we achieve privacy in JavaScript?",
+a: "The most common way was closures. You declare variables inside the constructor using `let` or `const` and create privileged methods inside the constructor that capture those variables. A more memory-efficient approach was using a module-level `WeakMap`, using `this` as the key and the private data as the value.",
+difficulty: "Intermediate"
+},
+{
+q: "What happens if you don't call `super()` in a subclass constructor?",
+a: "A `ReferenceError` is thrown. When a class `extends` another, the JavaScript engine dictates that the parent class is responsible for creating the `this` binding. Until `super()` completes, the `this` keyword simply does not exist in the subclass context.",
+difficulty: "Beginner"
+},
+{
+q: "Why is assigning an arrow function as a class property considered a memory trade-off?",
+a: "Standard class methods are placed on the `prototype` object, meaning 100,000 instances share the exact same function in memory. Class property arrow functions (`method = () => {}`) are bound to the instance, meaning they are freshly instantiated 100,000 times, consuming significantly more memory in exchange for auto-binding `this`.",
+difficulty: "FAANG"
+}
+]
+},
+{
+id: 35,
+slug: "web-workers",
+icon: "🧵",
+color: "purple",
+title: "Web Workers & Parallelism",
+subtitle: "True OS threading, SharedArrayBuffer, and Atomics.",
+overview: {
+definition: "JavaScript is inherently single-threaded, driven by an Event Loop. Web Workers bypass this limitation by spawning true OS-level threads. Workers execute in separate global contexts, isolating them from the DOM, and communicate with the main thread via asynchronous message passing or zero-copy shared memory.",
+why: "Heavy CPU tasks (image processing, cryptography, massive data parsing) block the main thread, freezing the UI to 0 FPS. Offloading these to Web Workers ensures 60 FPS fluidity. Understanding parallel memory management dictates the upper limits of frontend performance.",
+react: "React 18's concurrent mode doesn't use Web Workers; it uses time-slicing on the main thread. However, computationally heavy React apps often dispatch Redux actions that trigger Web Worker calculations, updating state via `postMessage` callbacks.",
+node: "Node.js utilizes `worker_threads`. Unlike standard child processes that isolate memory completely via IPC, worker threads can share memory using `SharedArrayBuffer`, essential for multithreaded backend pipelines.",
+express: "Offloading intensive tasks (like bcrypt hashing or PDF generation) from the main Express event loop to worker pools, preventing one heavy request from bottlenecking hundreds of lightweight requests.",
+challenge: {
+title: "Worker Message Intercept",
+description: "Simulate a worker environment. Write a function `dispatch(msg)` that adds a string to an array, and `onMessage()` that returns the total count of messages.",
+initialCode: "let messages = [];\nfunction dispatch(msg) {\n  // your code here\n}\nfunction onMessage() {\n  // your code here\n}",
+testCases: [
+{ input: "dispatch('a'); dispatch('b'); onMessage()", expected: "2" }
+]
+},
+interview: "FAANG interviews focusing on performance will probe your understanding of the `Structured Clone` overhead. Transferring a 50MB JSON object via `postMessage` blocks the thread during cloning. `Transferable Objects` and `SharedArrayBuffer` are the FAANG-tier solutions."
+},
+mentalModel: {
+analogy: "The Main Thread is a brilliant chef running a kitchen. If they stop to slowly peel 1,000 potatoes (CPU blocking task), no food goes out. A Web Worker is hiring a prep cook in a separate room. The chef shouts 'peel these' (postMessage). When the prep cook finishes, they shout back, and the chef immediately uses them without having stopped cooking.",
+visual: "Main Thread                         Web Worker (OS Thread)\n┌─────────────┐   postMessage()     ┌─────────────┐\n│ UI Renders  ├────────────────────►│ CPU Task    │\n│ Interactions│                     │             │\n│             │◄────────────────────┤ Result      │\n└─────────────┘   onmessage         └─────────────┘\n       │\nSharedArrayBuffer (Shared Memory Pool directly accessed by both)",
+misconceptions: [
+["Web Workers have access to the DOM", "Workers run in `DedicatedWorkerGlobalScope`. They cannot read or modify the DOM, `window`, or `document`. They are purely for data computation."],
+["Promises execute in a separate thread", "Promises and `async/await` are purely concurrent abstractions over the single-threaded Event Loop. They do NOT spawn threads. A blocking `while(true)` inside a Promise will still freeze the entire browser."],
+["postMessage is infinitely fast", "`postMessage` uses the Structured Clone algorithm. Sending large objects requires the engine to serialize and deserialize the memory, which itself is a synchronously blocking operation."]
+]
+},
+theory: [
+{
+title: "The Web Worker API",
+desc: "Instantiating a worker points to a separate JS file. Communication is bidirectional using `postMessage` and event listeners.",
+code: "// Main Thread\nconst worker = new Worker('worker.js');\nworker.postMessage({ cmd: 'start', data: 42 });\nworker.onmessage = (e) => console.log('Result:', e.data);\n\n// worker.js\nself.onmessage = (e) => {\n  const result = e.data.data * 2;\n  self.postMessage(result);\n};"
+},
+{
+title: "Transferable Objects",
+desc: "To avoid the cloning overhead of `postMessage`, certain structures like `ArrayBuffer` can be strictly *transferred*. Ownership of the memory is yielded to the worker, immediately clearing it from the main thread.",
+code: "const buffer = new ArrayBuffer(1024 * 1024); // 1MB\n// Transfer ownership. The buffer in main thread becomes length 0\nworker.postMessage({ data: buffer }, [buffer]);"
+},
+{
+title: "SharedArrayBuffer & Atomics",
+desc: "Allows two threads to read/write the exact same memory space simultaneously. To prevent race conditions (two threads writing at the same millisecond), the `Atomics` API provides safe, lock-enforced operations.",
+code: "// Create 4 bytes of shared memory\nconst sharedBuffer = new SharedArrayBuffer(4);\nconst sharedArray = new Int32Array(sharedBuffer);\n\n// In Worker:\n// Safely add 5 to index 0, guaranteeing no race conditions\nAtomics.add(sharedArray, 0, 5);"
+},
+{
+title: "Node.js worker_threads",
+desc: "Node's solution for CPU-bound tasks. It shares the same V8 isolate underlying architecture but creates independent instances of V8 and Event Loops per thread.",
+code: "const { Worker, isMainThread, parentPort } = require('worker_threads');\nif (isMainThread) {\n  const worker = new Worker(__filename);\n  worker.on('message', msg => console.log(msg));\n} else {\n  parentPort.postMessage('Hello from Thread!');\n}"
+}
+],
+cheatsheet: [
+{ label: "new Worker(url)", desc: "Spawns a new dedicated worker thread executing the provided script." },
+{ label: "postMessage(data)", desc: "Sends data between threads using the Structured Clone algorithm." },
+{ label: "self", desc: "The global context inside a worker (replacing `window`)." },
+{ label: "Transferable", desc: "Zero-copy memory transfer. Original reference becomes detached/voided." },
+{ label: "SharedArrayBuffer", desc: "Memory space shared across multiple threads. Requires secure context (HTTPS/CORS)." },
+{ label: "Atomics", desc: "Static methods ensuring predictable reads/writes to SharedArrayBuffers." },
+{ label: "Service Worker", desc: "A proxy worker sitting between the browser and network, used for caching and PWA offline mode." }
+],
+interview: [
+{
+q: "Explain the 'Structured Clone' algorithm and its limitations.",
+a: "It is the engine's mechanism for duplicating JS objects for `postMessage` or IndexedDB. Unlike JSON.parse(JSON.stringify()), it supports circular references, Dates, RegExp, and Maps. However, it cannot clone Functions, DOM nodes, or prototype chains. Attempting to pass a class instance will strip its methods.",
+difficulty: "Intermediate"
+},
+{
+q: "If promises are single-threaded, how does `fetch()` resolve without blocking the thread?",
+a: "`fetch` hands the network request off to the operating system's networking stack (often written in C++). The OS handles the TCP/IP connection in the background. The JS thread continues executing. Once the OS receives the HTTP response, it places a callback into the Macrotask Queue, which the JS Event Loop eventually executes.",
+difficulty: "Intermediate"
+},
+{
+q: "Why are Atomics necessary when using SharedArrayBuffer?",
+a: "Because true multithreading allows race conditions. If Thread A and Thread B both execute `arr[0]++` simultaneously, they might both read `0`, increment to `1`, and write `1`, dropping a count. `Atomics.add(arr, 0, 1)` locks the memory address at the hardware level, ensuring the read-increment-write cycle completes uninterrupted.",
+difficulty: "FAANG"
+},
+{
+q: "What is the difference between a Web Worker and a Service Worker?",
+a: "A Web Worker is purely for background CPU computation and has no persistent lifecycle. A Service Worker acts as a network proxy. It intercepts HTTP requests (fetch events), caches assets for offline functionality, and handles background syncs and push notifications. Service Workers outlive the web page session.",
+difficulty: "Advanced"
+}
+]
+},
+{
+id: 36,
+slug: "regex",
+icon: "🔤",
+color: "red",
+title: "Regular Expressions & Text Processing",
+subtitle: "NFA engines, Catastrophic Backtracking, and Lookarounds.",
+overview: {
+definition: "JavaScript utilizes an NFA (Nondeterministic Finite Automaton) Regex engine. Regular expressions provide a declarative syntax for pattern matching. Advanced utilization requires understanding internal backtracking mechanics, lookarounds (assertions without consuming characters), and balancing greedy versus lazy quantifiers.",
+why: "Poorly constructed regex can crash entire Node servers. An unoptimized regex operating on untrusted input can trigger ReDoS (Regex Denial of Service), causing the single-threaded CPU to lock at 100% for minutes while resolving catastrophic backtracking.",
+react: "Form validation logic (emails, passwords, phone numbers) before submission. Using regex in controlled components to mask or sanitize inputs instantly on every keystroke.",
+node: "Parsing logs, sanitizing database queries, and extracting metadata from vast streams of text. Knowing how to write secure regex prevents server-crashing payloads.",
+express: "Express router parameters support regex natively (e.g., `app.get('/user/:id(\\\\d+)')`) to restrict route matching to specific string structures.",
+challenge: {
+title: "Match Valid Hex Colors",
+description: "Write a regex pattern that matches valid Hex colors. They start with `#`, followed by either exactly 3 or exactly 6 hexadecimal characters (a-f, A-F, 0-9).",
+initialCode: "function solve(str) {\n  const regex = /^#([a-fA-F0-9]{3}|[a-fA-F0-9]{6})$/i;\\n  return regex.test(str);\\n}",
+testCases: [
+{ input: "'#fff'", expected: "true" },
+{ input: "'#zzzzzz'", expected: "false" }
+]
+},
+interview: "FAANG regex questions usually focus on Lookarounds (e.g., 'Extract the dollar amount but only if preceded by an invoice number') and identifying ReDoS vulnerabilities in nested quantifiers."
+},
+mentalModel: {
+analogy: "A Regex Engine is a maze runner. Greedy quantifiers (*) mean running down a path as fast and far as possible, then backing up step-by-step (backtracking) if the exit is missed. Lazy quantifiers (*?) mean taking one step, checking for the exit, taking another step. Lookarounds are binoculars: looking ahead to ensure a path is clear without actually walking down it.",
+visual: "Catastrophic Backtracking (a+)+\nString: 'aaaaX'\n\nEngine tries to partition 'a's:\n[aaaa] X (Fail)\n[aaa][a] X (Fail)\n[aa][aa] X (Fail)\n[aa][a][a] X (Fail)\n[a][a][a][a] X (Fail)\n... tries 2^N combinations before failing.",
+misconceptions: [
+["Greedy is always faster than Lazy", "Greedy is faster if the target is near the end of the string. Lazy is faster if the target is near the beginning. Using `.*` blindly forces the engine to scan the entire document before backtracking."],
+["Regex is the best tool for parsing HTML", "HTML is not a regular language; it requires infinite nesting depth tracking. Using regex to parse HTML is fragile and prone to edge cases. Use DOM parsers."],
+["Lookarounds consume characters", "Lookarounds are zero-width assertions. They verify a condition exists, but the matcher's position in the string does not move forward. `(?=b)b` matches 'b'."]
+]
+},
+theory: [
+{
+title: "Greedy vs Lazy Quantifiers",
+desc: "Quantifiers like `*` (0 or more) and `+` (1 or more) are greedy by default, consuming as much text as possible. Appending `?` (e.g., `*?`) makes them lazy, consuming as little text as possible.",
+code: "const text = '<div>hello</div>';\n\n// Greedy: matches from first < to last >\ntext.match(/<.*>/);  // ['<div>hello</div>']\n\n// Lazy: stops at the very first >\ntext.match(/<.*?>/); // ['<div>']"
+},
+{
+title: "Lookaheads and Lookbehinds",
+desc: "Assertions that check the surroundings of a match without including those surroundings in the final match result. Crucial for intersecting conditions.",
+code: "const str = '100 USD and 200 EUR';\n\n// Positive Lookbehind: must be preceded by 'USD '\nconst match1 = str.match(/(?<=USD )\\d+/);\n\n// Positive Lookahead: must be followed by ' EUR'\nconst match2 = str.match(/\\d+(?= EUR)/); // ['200']"
+},
+{
+title: "Named Capture Groups",
+desc: "Instead of referencing capture groups by index (`match[1]`), ES2018 introduced named groups, allowing structured extraction into an object.",
+code: "const regex = /(?<year>\\d{4})-(?<month>\\d{2})-(?<day>\\d{2})/;\nconst match = regex.exec('2025-10-31');\n\nconsole.log(match.groups.year);  // '2025'\nconsole.log(match.groups.month); // '10'"
+},
+{
+title: "ReDoS & Catastrophic Backtracking",
+desc: "Occurs when regex contains nested quantifiers (e.g., `(a+)+`) or overlapping alternations. If the string almost matches but fails at the end, the NFA engine attempts every mathematical permutation of backtracking, causing exponential time complexity $O(2^N)$.",
+code: "// VULNERABLE REGEX\nconst redos = /^([a-zA-Z0-9]+\\s?)*$/;\n\n// Safe for standard input\nredos.test('hello world'); \n\n// CPU locks up trying to backtrack spaces and characters\nredos.test('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa!');"
+}
+],
+cheatsheet: [
+{ label: "^ / $", desc: "Zero-width assertions. Matches the start (`^`) and end (`$`) of a string/line." },
+{ label: ".*", desc: "Matches any character (except newline) greedily." },
+{ label: ".*?", desc: "Matches any character lazily." },
+{ label: "(?=...)", desc: "Positive Lookahead: Matches if followed by `...`." },
+{ label: "(?!...)", desc: "Negative Lookahead: Matches if NOT followed by `...`." },
+{ label: "(?<=...)", desc: "Positive Lookbehind: Matches if preceded by `...`." },
+{ label: "(?<!...)", desc: "Negative Lookbehind: Matches if NOT preceded by `...`." },
+{ label: "\b", desc: "Word boundary. Matches the position between a word char and a non-word char." }
+],
+interview: [
+{
+q: "What is catastrophic backtracking, and how do you prevent it?",
+a: "It happens in NFA engines when an input fails a match near the end, and the regex contains overlapping quantifiers (like `(a+)+`). The engine tries every combination of splitting the characters, leading to exponential execution time. Prevent it by making quantifiers mutually exclusive, removing nested quantifiers, or using possessive quantifiers (not natively supported in JS, but emulated via lookaheads).",
+difficulty: "Advanced"
+},
+{
+q: "Write a regex that matches passwords requiring at least one uppercase, one lowercase, and one number.",
+a: "You achieve this by stringing together multiple positive lookaheads from the start of the string. `/^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d).{8,}$/`. Each lookahead scans the string independently. If all three assertions pass, the `.{8,}` finally consumes the characters.",
+difficulty: "FAANG"
+},
+{
+q: "What is the difference between `exec()` and `match()`?",
+a: "`exec()` is a method on the RegExp object. If the regex has the `g` (global) flag, `exec` acts as an iterator, returning one match per call and advancing its `lastIndex` property. `match()` is a method on Strings. With the `g` flag, it returns an array of all matches immediately, but drops all capture group details.",
+difficulty: "Intermediate"
+},
+{
+q: "How would you strip all HTML tags from a string using Regex?",
+a: "While a DOM parser is safer, a basic regex is `/<[^>]+>/g`. Using a negated character class `[^>]` is significantly faster and safer against ReDoS than using a lazy wildcard `/<.*?>/g` because it prevents the engine from backtracking across tags.",
+difficulty: "Beginner"
+}
+]
+},
+{
+id: 37,
+slug: "advanced-web-apis",
+icon: "👁️",
+color: "teal",
+title: "Advanced Web APIs",
+subtitle: "Observers, Layout Thrashing, and Asynchronous Storage.",
+overview: {
+definition: "Modern browsers expose APIs that allow developers to hook directly into the rendering pipeline and storage mechanisms without blocking the main thread. Observers (`Intersection`, `Mutation`, `Resize`) replace expensive event polling, while IndexedDB provides a fully asynchronous, transactional local database, superseding the synchronous limits of LocalStorage.",
+why: "Tying logic to the `scroll` event triggers synchronous layout calculations ('Layout Thrashing'), which drops frame rates to single digits on mobile devices. Observers push these calculations to the browser's native C++ compositing thread, executing callbacks asynchronously for buttery smooth 60FPS UI interactions.",
+react: "React's `useRef` and `useEffect` are heavily combined with `IntersectionObserver` to implement infinite scrolling, lazy loading images, and triggering animation frameworks when elements enter the viewport.",
+node: "While Observers are strictly browser APIs, Node developers must understand IndexedDB if they are building PWAs, offline-first architectures, or dealing with client-side caching of heavy API payloads.",
+express: "Designing API endpoints that output pagination cursors optimized for frontend IntersectionObserver infinite-scroll consumers.",
+challenge: {
+title: "Intersection Ratio Check",
+description: "Write a function that accepts an array of IntersectionObserver entries and returns the number of elements that are strictly more than 50% visible.",
+initialCode: "function solve(entries) {\n  // your code here\n  return 0;\n}",
+testCases: [
+{ input: "[{ intersectionRatio: 0.4 }, { intersectionRatio: 0.6 }]", expected: "1" }
+]
+},
+interview: "FAANG UI engineering interviews focus heavily on Layout Thrashing. You must know exactly which JS properties force the browser to recalculate layouts (like `offsetHeight`) and how Observers bypass this."
+},
+mentalModel: {
+analogy: "Using a `scroll` listener is like sitting in the passenger seat and asking 'Are we there yet?' every single millisecond. It exhausts the driver (the CPU). `IntersectionObserver` is setting an alarm clock. The driver handles the road, and the alarm only rings at the exact moment you reach the destination.",
+visual: "Layout Thrashing vs Observers:\n\n[ Scroll Event ] ──► elem.getBoundingClientRect() ──► (Sync Layout Calculation) ──► UI Freezes\n\n[ Observer ] ──► Browser Internal Tracker ──► (Async Callback) ──► UI Smooth",
+misconceptions: [
+["LocalStorage is fast enough for everything", "LocalStorage relies on synchronous File I/O. Reading/writing large JSON strings blocks the main thread completely. IndexedDB is asynchronous and does not block UI rendering."],
+["requestAnimationFrame replaces Observers", "`rAF` syncs your JS to the monitor's refresh rate (usually 60 times a second), which is great for animations. But doing layout checks inside `rAF` 60 times a second is still wildly inefficient compared to Observers firing exactly once when needed."],
+["MutationObserver is for listening to user inputs", "It observes the DOM structure itself (added/removed nodes, changed attributes). It does not listen to JS properties or value changes inside an `<input>` field."]
+]
+},
+theory: [
+{
+title: "IntersectionObserver",
+desc: "Asynchronously observes changes in the intersection of a target element with an ancestor element or with a top-level document's viewport. It is the gold standard for lazy-loading.",
+code: "const observer = new IntersectionObserver((entries) => {\n  entries.forEach(entry => {\n    if (entry.isIntersecting) {\n      console.log('Element visible!');\n      observer.unobserve(entry.target);\n    }\n  });\n}, { threshold: 0.5 }); // Fire when 50% visible\n\nobserver.observe(document.getElementById('lazy-img'));"
+},
+{
+title: "MutationObserver",
+desc: "Provides the ability to watch for changes being made to the DOM tree. Useful for third-party scripts that need to react when a host site dynamically alters the DOM.",
+code: "const observer = new MutationObserver((mutations) => {\n  for (const mutation of mutations) {\n    if (mutation.type === 'childList') {\n      console.log('Nodes added or removed.');\n    }\n  }\n});\n\nobserver.observe(document.body, { childList: true, subtree: true });"
+},
+{
+title: "ResizeObserver",
+desc: "Reports changes to the dimensions of an Element's content or border box. Unlike `window.resize`, it tracks individual elements independently, perfect for container queries.",
+code: "const resizer = new ResizeObserver(entries => {\n  for (let entry of entries) {\n    console.log('New width:', entry.contentRect.width);\n  }\n});\nresizer.observe(document.querySelector('.card'));"
+},
+{
+title: "Storage: LocalStorage vs IndexedDB",
+desc: "LocalStorage is limited to 5MB, strictly strings, and blocks the main thread. IndexedDB allows hundreds of megabytes, stores raw JS objects (via Structured Clone), and uses async events/promises.",
+code: "// LocalStorage (Sync & Blocking)\nlocalStorage.setItem('user', JSON.stringify(data));\n\n// IndexedDB relies on async transactions (Wrapper libraries like idb are common)\n// const db = await openDB('my-database', 1);\n// await db.put('storeName', { id: 1, data: rawObject });"
+}
+],
+cheatsheet: [
+{ label: "Layout Thrashing", desc: "Reading a geometric property (`offsetWidth`) immediately after writing a style, forcing a synchronous recalculation." },
+{ label: "rootMargin", desc: "IntersectionObserver config. Grows/shrinks the bounding box used for intersection calculations." },
+{ label: "threshold", desc: "IntersectionObserver config. Array of ratios [0, 0.5, 1] dictating when callbacks fire." },
+{ label: "getBoundingClientRect()", desc: "Synchronous method that returns element size/position. High performance cost if used in loops." },
+{ label: "IndexedDB", desc: "Low-level API for client-side storage of significant amounts of structured data." },
+{ label: "requestAnimationFrame", desc: "Tells the browser you wish to perform an animation before the next repaint." }
+],
+interview: [
+{
+q: "Explain what Layout Thrashing is and give a code example.",
+a: "Browsers queue up DOM changes to execute them efficiently. Layout thrashing happens when you force the browser to flush that queue synchronously by requesting a layout metric before the batch completes. Example: `elements.forEach(el => { el.style.height = '10px'; const h = el.offsetHeight; })`. Writing style, then immediately reading `offsetHeight` forces a full layout recalculation on every loop iteration.",
+difficulty: "Advanced"
+},
+{
+q: "How would you implement an infinite scroll mechanism efficiently?",
+a: "I would use an `IntersectionObserver`. I would place a transparent 'sentinel' `<div>` at the very bottom of the list. The observer watches the sentinel. When `isIntersecting` is true, the callback triggers an API fetch for the next page, appends the new items, and pushes the sentinel further down. This removes the need for `scroll` event listeners entirely.",
+difficulty: "Intermediate"
+},
+{
+q: "Why is saving state to LocalStorage inside a React component's render cycle dangerous?",
+a: "LocalStorage API (`getItem`, `setItem`) is entirely synchronous and involves disk I/O. If called during the render phase, it blocks the main thread, delaying React's commit phase and freezing the browser UI. It should be deferred to a `useEffect` and debounced, or moved to asynchronous IndexedDB for large objects.",
+difficulty: "FAANG"
+},
+{
+q: "When would you use a `MutationObserver`?",
+a: "They are rarely needed in standard React/Vue apps because the framework controls the DOM. They are vital when building browser extensions that must inject UI elements when a target website dynamically loads content, or when building rich text editors that need to sanitize raw user HTML pasting in real-time.",
+difficulty: "Intermediate"
+}
+]
+},
+{
+id: 38,
+slug: "heaps-tries",
+icon: "🌲",
+color: "green",
+title: "Heaps & Tries",
+subtitle: "FAANG Data Structures: Priority Queues and Prefix Trees.",
+overview: {
+definition: "Heaps and Tries are advanced tree-based data structures essential for optimal performance in specific domains. A Binary Heap is a complete binary tree implemented via an array, guaranteeing $O(\log N)$ insertions/extractions for Priority Queues. A Trie (Prefix Tree) is an $n$-ary tree where nodes store characters, enabling $O(L)$ searches for string dictionaries where $L$ is the word length.",
+why: "Standard arrays require $O(N \log N)$ to constantly sort for the 'next best' item; Heaps do it in $O(\log N)$. When building Autocomplete systems or routing algorithms, Tries dramatically outperform hash maps when partial matching (prefixes) is required.",
+react: "React's internal Scheduler uses a Min-Heap to manage task prioritization. High-priority user interactions are sifted to the top and executed before low-priority background renders.",
+node: "Job queues handling tasks with varying priorities. A server might use an in-memory Heap to process 'VIP' webhooks before standard webhooks, avoiding a massive $O(N)$ sorting bottleneck.",
+express: "Building internal cache layers or rate-limiting prefix matches. Tries are exceptionally fast for routing engines (like Express internals) to match URL paths efficiently without massive Regex arrays.",
+challenge: {
+title: "Trie Node Insertion",
+description: "Write a function that inserts a word into a basic Trie object.",
+initialCode: "function insert(trie, word) {\n  let curr = trie;\n  // your code here\n  // remember to set curr.isWord = true at the end\n}",
+testCases: [
+{ input: "let t = {}; insert(t, 'cat'); t.c.a.t.isWord", expected: "true" }
+]
+},
+interview: "These are the absolute pinnacle of FAANG algorithms. You must know how to implement a Heap using array math (`2i+1`, `2i+2`) from scratch, as JavaScript uniquely lacks a built-in Priority Queue."
+},
+mentalModel: {
+analogy: "A Heap is a corporate ladder. The CEO (Min/Max) is always at the very top. When a new person is hired at the bottom, they swap with their boss until they reach their correct rank (Sift-Up). A Trie is a massive physical dictionary with letter tabs. To find 'CAT', you open the 'C' section, flip to the 'A' pages, and scan for 'T'.",
+visual: "Array-Based Binary Min-Heap:\nArray: [10, 15, 30, 40, 50]\n\n         10 (Index 0)\n       /    \\n    15(1)   30(2)\n   /    \\n 40(3) 50(4)\n\nMath:\nLeft Child: (2 * i) + 1\nRight Child: (2 * i) + 2\nParent: floor((i - 1) / 2)",
+misconceptions: [
+["A Heap is a fully sorted array", "A Heap only guarantees vertical order (parents are smaller/larger than children). Siblings have no guaranteed relationship. Therefore, an array representation of a heap is NOT perfectly sorted sequentially."],
+["Hash Maps are always faster than Tries for strings", "Hash Maps are $O(1)$ for exact matches, but $O(N)$ to find all words starting with a specific prefix. Tries do prefix matching in $O(L)$ time."],
+["JavaScript has built-in Heaps", "Unlike Python (`heapq`) or Java (`PriorityQueue`), JS has no native heap structure. You must implement `siftUp` and `siftDown` manually during interviews."]
+]
+},
+theory: [
+{
+title: "Binary Heap Architecture",
+desc: "Because Heaps are 'complete' trees (filled left-to-right), they are represented as flat arrays to save memory on node pointers. Navigation relies entirely on index math.",
+code: "class MinHeap {\n  constructor() { this.heap = []; }\n  getLeftIndex(i) { return 2 * i + 1; }\n  getRightIndex(i) { return 2 * i + 2; }\n  getParentIndex(i) { return Math.floor((i - 1) / 2); }\n}"
+},
+{
+title: "Heap Insertion (Sift-Up)",
+desc: "Add the new element to the end of the array. Compare it with its parent. If it violates the heap property (e.g., smaller than parent in a Min-Heap), swap them. Repeat until the root is reached.",
+code: "insert(val) {\n  this.heap.push(val);\n  let i = this.heap.length - 1;\n  while (i > 0 && this.heap[i] < this.heap[this.getParentIndex(i)]) {\n    const p = this.getParentIndex(i);\n    [this.heap[i], this.heap[p]] = [this.heap[p], this.heap[i]];\n    i = p;\n  }\n}"
+},
+{
+title: "Tries (Prefix Trees)",
+desc: "A tree where each node represents a character. Traversing down a branch spells out a string. A boolean flag `isWord` indicates a valid end-of-string.",
+code: "class TrieNode {\n  constructor() {\n    this.children = {};\n    this.isWord = false;\n  }\n}\n// To insert 'cat':\n// root.children['c'] -> .children['a'] -> .children['t'].isWord = true;"
+},
+{
+title: "Trie Prefix Search",
+desc: "To find all autocomplete suggestions, you traverse to the node representing the end of the user's input prefix, then perform a Depth First Search (DFS) to collect all connected `isWord = true` nodes.",
+code: "function startsWith(trieRoot, prefix) {\n  let curr = trieRoot;\n  for (const char of prefix) {\n    if (!curr.children[char]) return false;\n    curr = curr.children[char];\n  }\n  return true; // Prefix exists\n}"
+}
+],
+cheatsheet: [
+{ label: "Heap Insert", desc: "Time: $O(\log N)$. Add to end, sift up." },
+{ label: "Heap Extract Root", desc: "Time: $O(\log N)$. Swap root with last element, pop end, sift down." },
+{ label: "Heap Peek", desc: "Time: $O(1)$. Access array index 0." },
+{ label: "Min-Heap", desc: "Parent is always smaller than or equal to its children." },
+{ label: "Max-Heap", desc: "Parent is always greater than or equal to its children." },
+{ label: "Trie Insert", desc: "Time: $O(L)$ where $L$ is word length. Iterates through characters." },
+{ label: "Trie Search", desc: "Time: $O(L)$. Lightning fast prefix matching." },
+{ label: "Dijkstra's Algorithm", desc: "Graph pathfinding algorithm that heavily relies on a Min-Heap to extract the next shortest node." }
+],
+interview: [
+{
+q: "Since JavaScript doesn't have a built-in Priority Queue, how would you merge K sorted arrays in an interview?",
+a: "The optimal solution is $O(N \log K)$ using a Min-Heap. I would implement a minimalist Min-Heap class focusing only on `insert` and `extractMin`. I'd initialize the heap with the first element of each of the K arrays. Then, I repeatedly extract the minimum, push it to the results, and insert the next element from the array that the minimum originated from.",
+difficulty: "FAANG"
+},
+{
+q: "Explain why Heaps are implemented as Arrays instead of Node objects.",
+a: "Memory efficiency and cache locality. Node objects require storing left/right pointers, doubling the memory footprint. Arrays allocate contiguous memory, avoiding pointer chasing across the heap. Index math (`2i+1`) is executed incredibly fast by the CPU, resulting in a significantly faster constant-time overhead.",
+difficulty: "Advanced"
+},
+{
+q: "How does a Trie handle memory overhead compared to a Hash Map for storing a dictionary?",
+a: "Hash Maps store each string independently, meaning prefixes like 'anti' are duplicated thousands of times. Tries overlap identical prefixes perfectly in memory. However, each Trie Node requires creating an object/map for its children. If the dataset has low prefix overlap, the object overhead of a Trie consumes more memory than flat Hash Map strings.",
+difficulty: "Advanced"
+},
+{
+q: "What is the time complexity of building a heap from an unsorted array?",
+a: "While inserting $N$ elements sequentially takes $O(N \log N)$, building it in place using Floyd's 'build-heap' algorithm (sifting down from the bottom up) operates in strictly $O(N)$ time. This mathematically works because the vast majority of nodes are at the bottom of the tree and require little to no sifting.",
+difficulty: "FAANG"
+}
+]
+}
 ];
 
 export const TOPIC_MAP = Object.fromEntries(TOPICS.map((t) => [t.slug, t]));
-

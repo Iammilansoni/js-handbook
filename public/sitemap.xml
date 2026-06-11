@@ -1,88 +1,199 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url>
+<url>
     <loc>https://jshandbook.dev/</loc>
     <priority>1.0</priority>
     <changefreq>weekly</changefreq>
   </url>
-  <url>
+<url>
     <loc>https://jshandbook.dev/handbook/var-let-const</loc>
     <priority>0.8</priority>
     <changefreq>monthly</changefreq>
   </url>
-  <url>
+<url>
     <loc>https://jshandbook.dev/handbook/this-keyword</loc>
     <priority>0.8</priority>
     <changefreq>monthly</changefreq>
   </url>
-  <url>
+<url>
     <loc>https://jshandbook.dev/handbook/closures</loc>
     <priority>0.8</priority>
     <changefreq>monthly</changefreq>
   </url>
-  <url>
+<url>
     <loc>https://jshandbook.dev/handbook/higher-order-functions</loc>
     <priority>0.8</priority>
     <changefreq>monthly</changefreq>
   </url>
-  <url>
+<url>
     <loc>https://jshandbook.dev/handbook/prototypes</loc>
     <priority>0.8</priority>
     <changefreq>monthly</changefreq>
   </url>
-  <url>
+<url>
     <loc>https://jshandbook.dev/handbook/es6-features</loc>
     <priority>0.8</priority>
     <changefreq>monthly</changefreq>
   </url>
-  <url>
+<url>
     <loc>https://jshandbook.dev/handbook/event-loop</loc>
     <priority>0.8</priority>
     <changefreq>monthly</changefreq>
   </url>
-  <url>
+<url>
     <loc>https://jshandbook.dev/handbook/promises-async-await</loc>
     <priority>0.8</priority>
     <changefreq>monthly</changefreq>
   </url>
-  <url>
+<url>
     <loc>https://jshandbook.dev/handbook/type-coercion</loc>
     <priority>0.8</priority>
     <changefreq>monthly</changefreq>
   </url>
-  <url>
+<url>
     <loc>https://jshandbook.dev/handbook/memory-management</loc>
     <priority>0.8</priority>
     <changefreq>monthly</changefreq>
   </url>
-  <url>
+<url>
     <loc>https://jshandbook.dev/handbook/data-types-primitives</loc>
     <priority>0.8</priority>
     <changefreq>monthly</changefreq>
   </url>
-  <url>
+<url>
     <loc>https://jshandbook.dev/handbook/arrays-methods</loc>
     <priority>0.8</priority>
     <changefreq>monthly</changefreq>
   </url>
-  <url>
+<url>
     <loc>https://jshandbook.dev/handbook/objects-methods</loc>
     <priority>0.8</priority>
     <changefreq>monthly</changefreq>
   </url>
-  <url>
+<url>
     <loc>https://jshandbook.dev/handbook/error-handling</loc>
     <priority>0.8</priority>
     <changefreq>monthly</changefreq>
   </url>
-  <url>
+<url>
     <loc>https://jshandbook.dev/handbook/es6-classes</loc>
     <priority>0.8</priority>
     <changefreq>monthly</changefreq>
   </url>
-  <url>
+<url>
     <loc>https://jshandbook.dev/handbook/iterables-iterators</loc>
     <priority>0.8</priority>
     <changefreq>monthly</changefreq>
+  </url>
+<url>
+    <loc>https://jshandbook.dev/handbook/dom-manipulation</loc>
+    <priority>0.8</priority>
+    <changefreq>monthly</changefreq>
+  </url>
+<url>
+    <loc>https://jshandbook.dev/handbook/events</loc>
+    <priority>0.8</priority>
+    <changefreq>monthly</changefreq>
+  </url>
+<url>
+    <loc>https://jshandbook.dev/handbook/maps-sets</loc>
+    <priority>0.8</priority>
+    <changefreq>monthly</changefreq>
+  </url>
+<url>
+    <loc>https://jshandbook.dev/handbook/linked-lists</loc>
+    <priority>0.8</priority>
+    <changefreq>monthly</changefreq>
+  </url>
+<url>
+    <loc>https://jshandbook.dev/handbook/stacks-queues</loc>
+    <priority>0.8</priority>
+    <changefreq>monthly</changefreq>
+  </url>
+<url>
+    <loc>https://jshandbook.dev/handbook/trees-bst</loc>
+    <priority>0.8</priority>
+    <changefreq>monthly</changefreq>
+  </url>
+<url>
+    <loc>https://jshandbook.dev/handbook/graphs</loc>
+    <priority>0.8</priority>
+    <changefreq>monthly</changefreq>
+  </url>
+<url>
+    <loc>https://jshandbook.dev/handbook/sorting-algorithms</loc>
+    <priority>0.8</priority>
+    <changefreq>monthly</changefreq>
+  </url>
+<url>
+    <loc>https://jshandbook.dev/handbook/search-algorithms</loc>
+    <priority>0.8</priority>
+    <changefreq>monthly</changefreq>
+  </url>
+<url>
+    <loc>https://jshandbook.dev/handbook/dynamic-programming</loc>
+    <priority>0.8</priority>
+    <changefreq>monthly</changefreq>
+  </url>
+<url>
+    <loc>https://jshandbook.dev/handbook/design-patterns</loc>
+    <priority>0.8</priority>
+    <changefreq>monthly</changefreq>
+  </url>
+<url>
+    <loc>https://jshandbook.dev/handbook/proxy-reflect</loc>
+    <priority>0.8</priority>
+    <changefreq>monthly</changefreq>
+  </url>
+<url>
+    <loc>https://jshandbook.dev/handbook/functional-programming</loc>
+    <priority>0.8</priority>
+    <changefreq>monthly</changefreq>
+  </url>
+<url>
+    <loc>https://jshandbook.dev/handbook/security</loc>
+    <priority>0.8</priority>
+    <changefreq>monthly</changefreq>
+  </url>
+<url>
+    <loc>https://jshandbook.dev/handbook/testing</loc>
+    <priority>0.8</priority>
+    <changefreq>monthly</changefreq>
+  </url>
+
+  <url>
+    <loc>https://jshandbook.dev/topic/complexity</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://jshandbook.dev/topic/advanced-typescript</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://jshandbook.dev/topic/classes-oop</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://jshandbook.dev/topic/web-workers</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://jshandbook.dev/topic/regex</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://jshandbook.dev/topic/advanced-web-apis</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://jshandbook.dev/topic/heaps-tries</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
   </url>
 </urlset>
